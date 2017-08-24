@@ -70,9 +70,9 @@ class RawHECWriter(object):
         }
         self._session = requests.Session()
 
-    def write(self, event):
+    def write(self, events):
         '''
-        @event: dict object
+        @event: list of dict object
         {
             'index': <index>,
             'source': <source>,
@@ -82,15 +82,16 @@ class RawHECWriter(object):
         }
         '''
 
-        data = event['event']
-        meta = event
-        del meta['event']
+        for event in events:
+            data = event['event']
+            meta = event
+            del meta['event']
 
-        response = self._session.post(
-            self._uri, data=data, params=meta,
-            headers=self._headers, verify=False)
-        if response.status_code != 200:
-            raise HECError(response)
+            response = self._session.post(
+                self._uri, data=data, params=meta,
+                headers=self._headers, verify=False)
+            if response.status_code != 200:
+                raise HECError(response)
 
 
 if __name__ == '__main__':
@@ -109,4 +110,4 @@ if __name__ == '__main__':
     writer.write(events)
 
     raw_writer = RawHECWriter(hec_url, hec_token)
-    raw_writer.write(events[0])
+    raw_writer.write(events)
