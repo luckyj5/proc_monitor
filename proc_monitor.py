@@ -22,20 +22,21 @@ class ProcMonitor(object):
         self._metrics = metrics
         self._interval = interval
         self._normalize_metrics = normalize_metrics
+        self._done = False
 
     def run(self):
-        while 1:
+        while not self._done:
             try:
                 self._do_run()
             except Exception:
                 logging.exception('failed to collect metrics')
-                break
+                time.sleep(1)
 
     def _do_run(self):
         platform_info = self._stats.get_platform_info()
 
         events = []
-        while 1:
+        while not self._done:
             if 'system' in self._metrics:
                 sys_metrics = self._stats.collect_system_stats()
                 events.extend(
@@ -57,6 +58,9 @@ class ProcMonitor(object):
             self._sink.write(events)
             del events[:]
             time.sleep(self._interval)
+
+    def stop(self):
+        self._done = True
 
 
 def monitor_proc(config):
@@ -107,4 +111,5 @@ if __name__ == '__main__':
             'processes': ['splunk-firehose-nozzle'],
         }
     }
+
     monitor_proc(config)
