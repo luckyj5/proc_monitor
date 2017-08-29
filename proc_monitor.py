@@ -1,5 +1,6 @@
 import time
 import logging
+import os
 
 
 class ProcMonitor(object):
@@ -98,12 +99,12 @@ def monitor_proc(config):
 
 if __name__ == '__main__':
     config = {
-        'hec_url': 'https://10.16.29.64:8088',
-        'hec_token': '1CB57F19-DC23-419A-8EDA-BA545DD3674D',
+        'hec_url': os.environ.get('SPLUNK_HOST', 'https://localhost:8088'),
+        'hec_token': os.environ.get('SPLUNK_TOKEN', '00000000-0000-0000-0000-000000000000'),
         'interval': 2,
         'metrics': {
             'system': True,
-            'processes': ['systemd', 'init'],
+            'processes': ['splunk-firehose-nozzle'],
         }
     }
     monitor_proc(config)
