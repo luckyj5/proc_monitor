@@ -108,7 +108,7 @@ if __name__ == '__main__':
         'interval': 2,
         'metrics': {
             'system': True,
-            'processes': ['splunk-firehose-nozzle'],
+            'processes': os.environ.get('TARGETS', 'splunk-firehose-nozzle').split(','),
         }
     }
 
