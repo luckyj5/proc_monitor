@@ -42,6 +42,11 @@ class ProcMonitor(object):
                 events.extend(
                     self._normalize_metrics(platform_info, sys_metrics))
 
+            if 'network_usage' in self._metrics:
+                nw_metrics = self._stats.collect_network_io_stats()
+                events.extend(
+                    self._normalize_metrics(platform_info, nw_metrics))
+
             if 'topn_process' in self._metrics:
                 topn_process_metrics = self._stats.collect_topn_process_stats(
                     self._metrics['topn_process'])
@@ -108,6 +113,7 @@ if __name__ == '__main__':
         'interval': 2,
         'metrics': {
             'system': True,
+            'network_usage': True,
             'processes': os.environ.get('TARGETS', 'splunk-firehose-nozzle').split(','),
         }
     }

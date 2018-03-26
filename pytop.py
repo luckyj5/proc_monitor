@@ -99,6 +99,15 @@ def collect_system_stats():
     mem_usage["cpu_usage"] = cpu_usage
     return mem_usage
 
+def collect_network_io_stats(interface="eth0"):
+    '''
+    Network io stats
+    :return: 
+    '''
+    network_usage = psutil.net_io_counters(pernic=True)[interface]
+    fields = network_usage._fields
+    return {f: getattr(network_usage, f) for f in fields}
+
 
 def get_platform_info():
     platform_info = platform.uname()
@@ -114,6 +123,7 @@ def get_platform_info():
         'mem_total': psutil.virtual_memory().total,
         'boot_time': boot_time,
         'hostname': socket.gethostname(),
+        'network_interfaces': psutil.net_if_stats()
     }
 
 
@@ -134,3 +144,4 @@ if __name__ == '__main__':
     print collect_process_stats(['init', 'systemd'])
     print collect_topn_process_stats(10)
     print collect_system_stats()
+    print collect_network_io_stats()
